@@ -7,8 +7,8 @@ A pottery-making simulator in a first person perspective.
 ## Must Have List
 
 - First person perspective
-- Sculpting feature
-- Main tool
+- Sculpting/shaping pottery feature
+- Main sculpting tool
 - Rotation of artwork/piece
 - Textures
 - Instructions
@@ -20,4 +20,6 @@ A pottery-making simulator in a first person perspective.
 - Tutorial/guide funct.
 - Player movement (in 1st person)
 - Variety of multiple tools for different sculpting features
+- Lighting graphics
+- Baking the pottery mechanic
 
