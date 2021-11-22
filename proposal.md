@@ -2,15 +2,22 @@
 
 ## Description
 
-Here I will describe what I'm going to build...
+A pottery-making simulator in a first person perspective.
 
 ## Must Have List
 
-- first thing
-- second thing
-- etc
+- First person perspective
+- Sculpting feature
+- Main tool
+- Rotation of artwork/piece
+- Textures
+- Instructions
+
 
 ## Nice to Have List
 
-- extra
-- useful but not necessary(?) mechanic/addition
+- Menu screen
+- Tutorial/guide funct.
+- Player movement (in 1st person)
+- Variety of multiple tools for different sculpting features
+
