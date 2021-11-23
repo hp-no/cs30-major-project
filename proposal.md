@@ -10,6 +10,7 @@ A sculpting (clay sculptures, pottery) simulator in a first person perspective.
 - Sculpting/shaping feature or tool used to form/modify artpiece
 - A mechanic that rotates the art piece around (to view multiple sides or use in sculpting the piece)
 - Textures on art piece
+- Background music
 - Instructions
 
 ## Nice to Have List
@@ -21,4 +22,6 @@ A sculpting (clay sculptures, pottery) simulator in a first person perspective.
 - Option to either sculpt pottery or make sculptures
 - Baking the pottery mechanic
 - Lighting graphics
+- Sound effects
+- Take/save a photo of creation
 
