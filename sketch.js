@@ -1,4 +1,4 @@
-// Project Title
+// CS30 Major Project: (temporary title)
 // Your Name
 // Date
 //
@@ -7,9 +7,13 @@
 
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth*0.85, windowHeight*0.95, WEBGL);
 }
 
 function draw() {
   background(220);
+  rotateX(frameCount * 0.01);
+  rotateY(frameCount * 0.01);
+  normalMaterial(); //placehodler material
+  sphere();
 }
