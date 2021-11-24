@@ -15,5 +15,5 @@ function draw() {
   
   rotateY(frameCount * 0.01);
   fill("pink");
-  sphere();
+  sphere(175, 16, 4);
 }
