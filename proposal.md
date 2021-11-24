@@ -2,14 +2,14 @@
 
 ## Description
 
-A sculpting (clay sculptures, pottery) simulator in a first person perspective.
+A sculpting (clay sculptures) simulator made on a 3D grid.
 
 ## Must Have List
 
-- First person perspective + head movement
-- Sculpting/shaping feature or tool used to form/modify artpiece
+- Use of 3D models and shapes on a 3D grid plane to create sculptures
+- Sculpting/shaping feature or tool used to sculpt artpiece
 - A mechanic that rotates the art piece around (to view multiple sides or use in sculpting the piece)
-- Textures on art piece
+- Visual imagery of the current selected tool to indicate that it is being used
 - Background music
 - Instructions
 
@@ -17,10 +17,10 @@ A sculpting (clay sculptures, pottery) simulator in a first person perspective.
 
 - Menu screen
 - Tutorial/guide funct.
-- Player movement (in 1st person)
-- Variety of multiple tools for different sculpting features/methods
-- Option to either sculpt pottery or make sculptures
-- Baking the pottery mechanic
+- Player movement (or head movement) in 1st person
+- Addition of multiple tools for a variety of sculpting features/methods
+- Dust/Excess pieces shown on the table after sculpting is started
+- Textures on art piece
 - Lighting graphics
 - Sound effects
 - Take/save a photo of creation
