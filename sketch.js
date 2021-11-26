@@ -34,10 +34,10 @@ function displayObject() {}
 
 function rotationMovement() {
   if (keyIsDown(RIGHT_ARROW)) {
-    objectdy += 2;
+    objectdy -= 2;
   }
   if (keyIsDown(LEFT_ARROW)) {
-    objectdy -= 2;
+    objectdy += 2;
   }
   if (keyIsDown(UP_ARROW)) {
     objectdx += 2;
