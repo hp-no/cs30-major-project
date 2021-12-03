@@ -17,9 +17,9 @@ let objectdx = 0;
 let objectdy = 0;
 
 //camera parameters
-let z = 200;
+let cameraZ = 200;
 let centerX = 0;
-let centerY = 0;
+let centerY = -100;
 let centerZ = 0;
 
 function setup() {
@@ -31,15 +31,33 @@ function draw() {
   background(220);
   rotationMovement();
   displayObject();
-  camera(0, 0, z, centerX, centerY, centerZ, 0, 1, 0); // explore the functions of the last 3 parameters
+  // camera(-150, -150, cameraZ, centerX, centerY, centerZ, 0, 1, 0);
+  camera(0, 0, cameraZ, centerX, centerY, centerZ, 0, 1, 0); // explore the functions of the last 3 parameters
   perspectiveMovement();
+  // displayPlatform();
 }
+
+// function displayPlatform() {
+//   for (let x=0; x < width; x+=20) {
+//     for (let z=0; z < height; z+= 20) {
+//       push();
+//       fill(180);
+//       translate(x, 0, z); //changing origin for each box
+//       box(20);
+//       pop();
+//     }
+//   }
+// }
 
 function displayObject() {
   rotateX(objectdx); // rotate(temp, createVector(width/2));
   rotateY(objectdy);
+  push();
+  stroke("brown");
   fill("orange");
+  translate(10, 5, 10);
   sphere(width*0.1, 16, 4);
+  pop();
 }
 
 function rotationMovement() {
@@ -49,24 +67,24 @@ function rotationMovement() {
   if (keyIsDown(LEFT_ARROW)) {
     objectdy += 2;
   }
-  // if (keyIsDown(UP_ARROW)) { 
-  //   objectdx += 2;
-  // }
-  // if (keyIsDown(DOWN_ARROW)) {
-  //   objectdx -= 2;
-  // }
+  if (keyIsDown(UP_ARROW)) { 
+    objectdx += 2;
+  }
+  if (keyIsDown(DOWN_ARROW)) {
+    objectdx -= 2;
+  }
 }
 
 function perspectiveMovement() {
   if (keyIsDown(87)) { // 'w' or move forward
-    if (z > 80) {
-      z -= 7;
+    if (cameraZ > 80) {
+      cameraZ -= 7;
     }
   }
 
   if (keyIsDown(83)) { // 's' or move backward 
-    if (z < 400) {
-      z += 10;
+    if (cameraZ < 400) {
+      cameraZ += 10;
     }
   } 
 
@@ -82,13 +100,13 @@ function perspectiveMovement() {
     }
   }  
 
-  if (keyIsDown(UP_ARROW)) { // look up
+  if (keyIsDown(87)) { //  'w' or look up
     if (centerY < 400) {
       centerY -= 5;
     }
   }
 
-  if (keyIsDown(DOWN_ARROW)) { // look down
+  if (keyIsDown(83)) { // 's' or look down
     if (centerY > -400) {
       centerY += 5;
     }
