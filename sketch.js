@@ -17,10 +17,10 @@ let objectdx = 0;
 let objectdy = 0;
 
 //camera parameters
-let cameraZ = 200;
-let centerX = 0;
+let cameraZ = 0; //-100
+let centerX = 0; //50
 let centerY = -100;
-let centerZ = 0;
+let centerZ = 100; //75
 
 function setup() {
   createCanvas(windowWidth*0.85, windowHeight*0.95, WEBGL);
@@ -29,25 +29,31 @@ function setup() {
 
 function draw() {
   background(220);
-  rotationMovement();
   displayObject();
-  // camera(-150, -150, cameraZ, centerX, centerY, centerZ, 0, 1, 0);
-  camera(0, 0, cameraZ, centerX, centerY, centerZ, 0, 1, 0); // explore the functions of the last 3 parameters
+  rotationMovement();
+  displayCamera();
   perspectiveMovement();
-  // displayPlatform();
+  displayBoxes();
 }
 
-// function displayPlatform() {
-//   for (let x=0; x < width; x+=20) {
-//     for (let z=0; z < height; z+= 20) {
-//       push();
-//       fill(180);
-//       translate(x, 0, z); //changing origin for each box
-//       box(20);
-//       pop();
-//     }
-//   }
-// }
+function displayCamera() {
+  translate(0, 0, 0);
+  camera(-150 , -300, cameraZ, //-150, -300, camZ
+    centerX, centerY, centerZ,
+    0, 1, 0);
+  // camera(0, 0, cameraZ, centerX, centerY, centerZ, 0, 1, 0); // explore the functions of the last 3 parameters
+}
+
+function displayBoxes() {
+  for (let x=0; x<width; x+=20) {
+    for (let z=0; z<height; z+=20) {
+      push();
+      translate(x-10, 0, z-10); //sets the xyz location for each box
+      box(20);
+      pop();
+    }
+  }
+}
 
 function displayObject() {
   rotateX(objectdx); // rotate(temp, createVector(width/2));
@@ -55,7 +61,7 @@ function displayObject() {
   push();
   stroke("brown");
   fill("orange");
-  translate(10, 5, 10);
+  translate(100, -100, 100);
   sphere(width*0.1, 16, 4);
   pop();
 }
