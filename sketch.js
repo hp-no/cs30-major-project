@@ -17,6 +17,8 @@
 let speed = 10;
 let objectdx = 0;
 let objectdy = 0;
+let cellSize = 6;
+let mouseLocation;
 
 //grid parameters
 let gridSize = 20;
@@ -45,6 +47,15 @@ function draw() {
 
 }
 
+function mouseHover() { //rename later
+  // mouseLocation = {mouseX, mouseY};
+  
+  let cellX = Math.floor(mouseX/cellSize);
+  let cellY = Math.floor(mouseY/cellSize);
+  let cellZ = Math.floor(mouseY/cellSize);
+  
+}
+
 function displayCamera() {
   translate(0, 0, 0);
   // camera(-150 , -300, cameraZ, //-150, -300, camZ
@@ -55,9 +66,10 @@ function displayCamera() {
   camera(-100, -100, -50,
     0, 0, 50,
     0, 1, 0);
+
 }
 
-function display3DGrid() {
+function display3DGrid() { //find a way to center the grid to 0, 0
   for (let z=0; z<gridSize; z++) {
     for (let y=0; y<gridSize; y++) {
       for (let x=0; x<gridSize; x++) {
@@ -69,13 +81,13 @@ function display3DGrid() {
         }
         push();
         translate(x*20, y*20, z*20); //sets the xyz location for each box
-        box(20);
+        stroke(200);
+        box(cellSize);
         pop();
       }
     }
   }
 }
-
 
 function createEmpty3DArray(rows, cols, layers) {
   let grid = [];
@@ -157,3 +169,6 @@ function perspectiveMovement() {
 
 //Note: perspective movement for looking left-right/up-down based off of mouse movement?
 // --> would make it so that wasd keys would be used for moving forward-backward/left-right
+
+// --> center the grid (translucent --> transparent)
+// --> **array for all the boxes (makes addition(?) and deletion of boxes more efficient)
