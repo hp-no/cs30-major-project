@@ -10,25 +10,24 @@
 
 //"object" is a temporary variable name for the art piece
 
-
-
-
 //global variables
 let speed = 10;
 let objectdx = 0;
 let objectdy = 0;
-let cellSize = 6;
+
+let cellSize = 20;
 let mouseLocation;
+let blockArray = [];
 
 //grid parameters
 let gridSize = 20;
 let grid;
 
 //camera parameters
-let cameraZ = 0; //-100
+let cameraZ = -50; //-100
 let centerX = 0; //50
-let centerY = -100;
-let centerZ = 100; //75
+let centerY = 0;
+let centerZ = 50; //75
 
 function setup() {
   createCanvas(windowWidth*0.85, windowHeight*0.95, WEBGL);
@@ -42,7 +41,7 @@ function draw() {
   // displayObject();
   // rotationMovement();
   displayCamera();
-  // perspectiveMovement();
+  perspectiveMovement();
   display3DGrid();
 
 }
@@ -67,6 +66,9 @@ function displayCamera() {
     0, 0, 50,
     0, 1, 0);
 
+  // camera(-100, -100, cameraZ,
+  //   centerX, centerY, centerZ,
+  //   0, 1, 0);
 }
 
 function display3DGrid() { //find a way to center the grid to 0, 0
@@ -74,14 +76,21 @@ function display3DGrid() { //find a way to center the grid to 0, 0
     for (let y=0; y<gridSize; y++) {
       for (let x=0; x<gridSize; x++) {
         if (grid[z][y][x] === 0) {
-          fill("white");
+          // fill("white");
+          let theBlock = new Block(x,y,z,cellSize,"white");
+          //theBlock.display(); //uncomment
+          blockArray.push(theBlock);
         }
         else if (grid[z][y][x] === 1) {
-          fill("black");
+          // fill("black"); 
+          let theBlock = new Block(x,y,z,cellSize,"black");
+          //theBlock.display(); //uncomment
+          blockArray.push(theBlock);
         }
         push();
-        translate(x*20, y*20, z*20); //sets the xyz location for each box
+        translate(x*20, y*20, z*20); //sets the xyz location for each cell
         stroke(200);
+        fill(240);
         box(cellSize);
         pop();
       }
@@ -167,8 +176,27 @@ function perspectiveMovement() {
   }
 }
 
+class Block {
+  constructor(x, y, z, cellSize, theColor) {
+    this.x = x*cellSize;
+    this.y = y*cellSize;
+    this.z = z*cellSize;
+    this.size = cellSize;
+    this.theColor = theColor; //placeholder used for testing
+  }
+
+  display() {
+    push();
+    translate(this.x, this.y, this.z); //sets the xyz location for each box
+    stroke(200);
+    fill(this.theColor);
+    box(this.size);
+    pop();
+  }
+}
+
 //Note: perspective movement for looking left-right/up-down based off of mouse movement?
 // --> would make it so that wasd keys would be used for moving forward-backward/left-right
 
 // --> center the grid (translucent --> transparent)
-// --> **array for all the boxes (makes addition(?) and deletion of boxes more efficient)
+// --> **array for all the boxes (makes addition(?) and deletion of boxes more efficient) --> objects?
