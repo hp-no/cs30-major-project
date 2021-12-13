@@ -52,7 +52,7 @@ function mouseHover() { //rename later
   let cellX = Math.floor(mouseX/cellSize);
   let cellY = Math.floor(mouseY/cellSize);
   let cellZ = Math.floor(mouseY/cellSize);
-  
+
 }
 
 function displayCamera() {
@@ -78,34 +78,44 @@ function display3DGrid() { //find a way to center the grid to 0, 0
         if (grid[z][y][x] === 0) {
           // fill("white");
           let theBlock = new Block(x,y,z,cellSize,"white");
-          //theBlock.display(); //uncomment
+          theBlock.display();
           blockArray.push(theBlock);
         }
         else if (grid[z][y][x] === 1) {
           // fill("black"); 
           let theBlock = new Block(x,y,z,cellSize,"black");
-          //theBlock.display(); //uncomment
+          theBlock.display();
           blockArray.push(theBlock);
         }
-        push();
-        translate(x*20, y*20, z*20); //sets the xyz location for each cell
-        stroke(200);
-        fill(240);
-        box(cellSize);
-        pop();
+        else if (grid[z][y][x] === 2) {
+          //empty space
+          let theBlock = new Block(x,y,z,cellSize,"white");
+          blockArray.push(theBlock);
+        }
       }
     }
   }
 }
 
 function createEmpty3DArray(rows, cols, layers) {
+  //currently a "randomized" 3D array
   let grid = [];
   for (let z=0; z<layers; z++) {
     grid.push([]);
     for (let y=0; y<rows; y++) {
       grid[z].push([]);
       for (let x=0; x<cols; x++) {
-        grid[z][y].push(0);
+        //create random 3D array
+        if (random(100) < 50) {
+          grid[z][y].push(2);
+        }
+        else if (random(100) > 50) {
+          grid[z][y].push(1);
+        }
+        else {
+          grid[z][y].push(0);
+        }
+        
       }
     }
   }
