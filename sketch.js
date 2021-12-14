@@ -14,14 +14,15 @@
 let speed = 10;
 let objectdx = 0;
 let objectdy = 0;
+let v = 1;
 
-let cellSize = 20;
 let mouseLocation;
 let blockArray = [];
 
 //grid parameters
 let gridSize = 20;
 let grid;
+let cellSize;
 
 //camera parameters
 let cameraZ = -50; //-100
@@ -32,7 +33,7 @@ let centerZ = 50; //75
 function setup() {
   createCanvas(windowWidth*0.85, windowHeight*0.95, WEBGL);
   angleMode(DEGREES);
-
+  cellSize = height/gridSize;
   grid = createEmpty3DArray(gridSize, gridSize, gridSize);
 }
 
@@ -46,13 +47,20 @@ function draw() {
 
 }
 
-function mouseHover() { //rename later
+function mousePressed() { //rename later
   // mouseLocation = {mouseX, mouseY};
   
   let cellX = Math.floor(mouseX/cellSize);
   let cellY = Math.floor(mouseY/cellSize);
+
   let cellZ = Math.floor(mouseY/cellSize);
 
+  if (grid[cellZ][cellY][cellX] === 0) {
+    grid[cellZ][cellY][cellX] = 1;
+  }
+  else if (grid[cellZ][cellY][cellX] === 1) {
+    grid[cellZ][cellY][cellX] = 0;
+  }
 }
 
 function displayCamera() {
@@ -62,13 +70,14 @@ function displayCamera() {
   //   0, 1, 0);
   // camera(0, 0, cameraZ, centerX, centerY, centerZ, 0, 1, 0); // explore the functions of the last 3 parameters
 
-  camera(-100, -100, -50,
+  camera(-200, -200, -150, //dist.
     0, 0, 50,
     0, 1, 0);
 
-  // camera(-100, -100, cameraZ,
-  //   centerX, centerY, centerZ,
+  // camera(-100, -100, -50,
+  //   0, 0, 50,
   //   0, 1, 0);
+
 }
 
 function display3DGrid() { //find a way to center the grid to 0, 0
@@ -183,6 +192,13 @@ function perspectiveMovement() {
     if (centerY > -400) {
       centerY += 5;
     }
+  }
+  //temp.
+  if (keyIsDown(RIGHT_ARROW)) {
+    v -= 2;
+  }
+  if (keyIsDown(LEFT_ARROW)) {
+    v += 2;
   }
 }
 
