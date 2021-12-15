@@ -15,7 +15,7 @@ let speed = 10;
 let objectdx = 0;
 let objectdy = 0;
 let v = 1;
-
+let selected; //temp.
 let mouseLocation;
 let blockArray = [];
 
@@ -35,6 +35,7 @@ function setup() {
   angleMode(DEGREES);
   cellSize = height/gridSize;
   grid = createEmpty3DArray(gridSize, gridSize, gridSize);
+  selected = new Selection();
 }
 
 function draw() {
@@ -42,10 +43,28 @@ function draw() {
   // displayObject();
   // rotationMovement();
   displayCamera();
-  perspectiveMovement();
+ 
+  // perspectiveMovement();
   display3DGrid();
+  
 
 }
+
+function keyPressed() {
+  if (key === "w") { // up
+    select.moveTo(select.x, select.y-1);
+  }
+  if (key === "a") { // left
+    select.moveTo(select.x-1, select.y);
+  }
+  if (key === "s") { // down
+    select.moveTo(select.x, select.y+1);
+  }
+  if (key === "d") { // right
+    select.moveTo(select.x+1, select.y);
+  }
+}
+
 
 function mousePressed() { //rename later
   // mouseLocation = {mouseX, mouseY};
@@ -194,11 +213,28 @@ function perspectiveMovement() {
     }
   }
   //temp.
-  if (keyIsDown(RIGHT_ARROW)) {
-    v -= 2;
+  // if (keyIsDown(RIGHT_ARROW)) {
+  //   v -= 1;
+  // }
+  // if (keyIsDown(LEFT_ARROW)) {
+  //   v += 1;
+  // }
+}
+
+class Selection { //temp. for testing
+  constructor(x, y, z, cellSize) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.size = cellSize;
   }
-  if (keyIsDown(LEFT_ARROW)) {
-    v += 2;
+
+  display() {
+    grid[this.z][this.y][this.x] = 3;
+  }
+
+  moveTo() {
+    //... add remaining code here
   }
 }
 
@@ -213,7 +249,8 @@ class Block {
 
   display() {
     push();
-    translate(this.x, this.y, this.z); //sets the xyz location for each box
+    // v = !v;
+    translate(this.x*v, this.y*v, this.z*v); //sets the xyz location for each box
     stroke(200);
     fill(this.theColor);
     box(this.size);
