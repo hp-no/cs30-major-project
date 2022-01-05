@@ -19,6 +19,8 @@ let selected; //temp.
 let mouseLocation;
 let blockArray = [];
 
+let theMode = "view"; // allows for a single key to trigger multiple functions depending on the mode
+
 //grid parameters
 let gridSize = 20;
 let grid;
@@ -33,7 +35,8 @@ let centerZ = 50; //75
 function setup() {
   createCanvas(windowWidth*0.85, windowHeight*0.95, WEBGL);
   angleMode(DEGREES);
-  cellSize = height/gridSize;
+  // cellSize = height/gridSize;
+  cellSize = 15;
   grid = createEmpty3DArray(gridSize, gridSize, gridSize);
   selected = new Selection();
 }
@@ -51,18 +54,19 @@ function draw() {
 }
 
 function keyPressed() {
-  if (key === "w") { // up
-    select.moveTo(select.x, select.y-1);
-  }
-  if (key === "a") { // left
-    select.moveTo(select.x-1, select.y);
-  }
-  if (key === "s") { // down
-    select.moveTo(select.x, select.y+1);
-  }
-  if (key === "d") { // right
-    select.moveTo(select.x+1, select.y);
-  }
+  // if (key === "w") { // up
+  //   select.moveTo(select.x, select.y-1);
+  // }
+  // if (key === "a") { // left
+  //   select.moveTo(select.x-1, select.y);
+  // }
+  // if (key === "s") { // down
+  //   select.moveTo(select.x, select.y+1);
+  // }
+  // if (key === "d") { // right
+  //   select.moveTo(select.x+1, select.y);
+  // }
+
 }
 
 
@@ -177,39 +181,41 @@ function rotationMovement() {
 }
 
 function perspectiveMovement() {
-  if (keyIsDown(87)) { // 'w' or move forward
-    if (cameraZ > 80) {
-      cameraZ -= 7;
+  if (theMode === "view") {
+    // if (keyIsDown(87)) { // 'w' or move forward
+    //   if (cameraZ > 80) {
+    //     cameraZ -= 7;
+    //   }
+    // }
+  
+    // if (keyIsDown(83)) { // 's' or move backward 
+    //   if (cameraZ < 400) {
+    //     cameraZ += 10;
+    //   }
+    // } 
+  
+    if (keyIsDown(65)) { // 'a' or turn left
+      if (centerX > -400) {
+        centerX -= 7;
+      }
+    } 
+  
+    if (keyIsDown(68)) { // 'd' or turn right
+      if (centerX < 400) {
+        centerX += 7;
+      }
+    } 
+  
+    if (keyIsDown(87)) { //  'w' or look up
+      if (centerY < 400) {
+        centerY -= 5;
+      }
     }
-  }
-
-  if (keyIsDown(83)) { // 's' or move backward 
-    if (cameraZ < 400) {
-      cameraZ += 10;
-    }
-  } 
-
-  if (keyIsDown(65)) { // 'a' or turn left
-    if (centerX > -400) {
-      centerX -= 7;
-    }
-  } 
-
-  if (keyIsDown(68)) { // 'd' or turn right
-    if (centerX < 400) {
-      centerX += 7;
-    }
-  }  
-
-  if (keyIsDown(87)) { //  'w' or look up
-    if (centerY < 400) {
-      centerY -= 5;
-    }
-  }
-
-  if (keyIsDown(83)) { // 's' or look down
-    if (centerY > -400) {
-      centerY += 5;
+  
+    if (keyIsDown(83)) { // 's' or look down
+      if (centerY > -400) {
+        centerY += 5;
+      }
     }
   }
   //temp.
@@ -235,6 +241,7 @@ class Selection { //temp. for testing
 
   moveTo() {
     //... add remaining code here
+
   }
 }
 
