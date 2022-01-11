@@ -143,16 +143,41 @@ function altDisplay3DGrid() { // ALTERNATIVE way to display the grid
 
 function keyPressed() {
   //selection movement --> changes depending on the current quadrant
-  if (key === "w") { //up
+  if (key === "w") { // up
+    if (selectQuadrant === "xy" || selectQuadrant === "yz") {
+      select.moveto(select.x, select.y+1, select.z);
+    }
+    // else if (selectQuadrant === "xz") {
+    //   select.moveto(select.x, select.y+1, select.z);
+    // }
+  }
+
+  if (key === "a") { // left
+    if (selectQuadrant === "xy") {
+      select.moveto(select.x-1, select.y+1, select.z);
+    }
     if (selectQuadrant === "yz") {
-      
+      select.moveto(select.x, select.y+1, select.z-1);
     }
-    else if (selectQuadrant === "xz") {
-      //
+  }
+  
+  if (key === "s") { // down
+    if (selectQuadrant === "xy" || selectQuadrant === "yz") {
+      select.moveto(select.x, select.y-1, select.z);
     }
-    else if (selectQuadrant === "xy") {
-      //
-    }
+    // else if (selectQuadrant === "xz") {
+    //   select.moveto(select.x, select.y, select.z);
+    // }
+  }
+
+}
+
+function movementSorter(newGridPos) {
+  if (newGridPos > gridSize-1) {
+    return 1;
+  }
+  if (newGridPos < 0) {
+    return gridSize-2;
   }
 }
 
@@ -169,16 +194,19 @@ class Selection {
 
   moveTo(newX, newY, newZ) {
     //check for the border/edge
-    if (newX > gridSize || newX < 0) {
+    if (newX > gridSize-1 || newX < 0) {
       selectQuadrant = "yz";
+      newZ = movementSorter(newX);
       newX = this.x;
     }
-    if (newY > gridSize || newY < 0) {
-      selectQuadrant = "xz";
+    if (newY > gridSize-1 || newY < 0) { // !
+      // selectQuadrant = "xz";
+      
       newY = this.y;
     }
-    if (newZ > gridSize || newZ < 0) {
+    if (newZ > gridSize-1 || newZ < 0) {
       selectQuadrant = "xy";
+      newX = movementSorter(newZ);
       newZ = this.z;
     }
 
