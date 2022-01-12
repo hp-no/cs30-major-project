@@ -11,6 +11,8 @@ let blockArray = [];
 let selectQuadrant; //xy, xz, yz
 let selectionBlock;
 
+
+
 function setup() {
   createCanvas(windowWidth*0.85, windowHeight*0.95, WEBGL);
   angleMode(DEGREES);
@@ -18,12 +20,14 @@ function setup() {
 
   //alt.
   selectionBlock = new Selection(gridSize, 10, 10);
+
+
 }
 
 function draw() {
   background(220);
-  displayCamera();
-  display3DGrid();
+  // displayCamera();
+  // display3DGrid();
 }
 
 function displayCamera() {
@@ -192,7 +196,7 @@ class Selection {
     grid[this.z][this.y][this.x] = 9;
   }
 
-  moveTo(newX, newY, newZ) {
+  moveTo(newX, newY, newZ) { // alternatively, give 2 or 4 different views (ex: front-top, back-bottom), and disallow border movement for walls that are not within the view, thus when switching to another view state, the movement modes are also changed accordingly
     //check for the border/edge
     if (newX > gridSize-1 || newX < 0) {
       selectQuadrant = "yz";
@@ -200,7 +204,12 @@ class Selection {
       newX = this.x;
     }
     if (newY > gridSize-1 || newY < 0) { // !
-      // selectQuadrant = "xz";
+      if (this.z === gridSize-1) {
+        newZ = selectQuadrant(-newY);
+      }
+      else {
+        newZ = selectQuadrant(newY);
+      }
       
       newY = this.y;
     }
