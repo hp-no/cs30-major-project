@@ -11,6 +11,8 @@ let blockArray = [];
 let selectQuadrant; //xy, xz, yz
 let selectionBlock;
 
+//alt. 2 variables:
+
 
 
 function setup() {
@@ -27,7 +29,7 @@ function setup() {
 function draw() {
   background(220);
   // displayCamera();
-  // display3DGrid();
+  // altdisplayDGrid();
 }
 
 function displayCamera() {
@@ -158,10 +160,10 @@ function keyPressed() {
 
   if (key === "a") { // left
     if (selectQuadrant === "xy") {
-      select.moveto(select.x-1, select.y+1, select.z);
+      select.moveto(select.x-1, select.y, select.z);
     }
     if (selectQuadrant === "yz") {
-      select.moveto(select.x, select.y+1, select.z-1);
+      select.moveto(select.x, select.y, select.z-1);
     }
   }
   
@@ -196,7 +198,7 @@ class Selection {
     grid[this.z][this.y][this.x] = 9;
   }
 
-  moveTo(newX, newY, newZ) { // alternatively, give 2 or 4 different views (ex: front-top, back-bottom), and disallow border movement for walls that are not within the view, thus when switching to another view state, the movement modes are also changed accordingly
+  moveTo(newX, newY, newZ) { // use sliders for perspective, and picking for selection
     //check for the border/edge
     if (newX > gridSize-1 || newX < 0) {
       selectQuadrant = "yz";
@@ -205,10 +207,10 @@ class Selection {
     }
     if (newY > gridSize-1 || newY < 0) { // !
       if (this.z === gridSize-1) {
-        newZ = selectQuadrant(-newY);
+        newZ = movementSorter(-newY);
       }
       else {
-        newZ = selectQuadrant(newY);
+        newZ = movementSorter(newY);
       }
       
       newY = this.y;
