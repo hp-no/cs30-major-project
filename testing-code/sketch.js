@@ -9,7 +9,7 @@ let cellSize = 15;
 let d = 1; // represents distance/spacing between blocks
 let blockArray = [];
 let selectQuadrant; //xy, xz, yz
-let selectionBlock;
+let select;
 
 //alt. 2 variables:
 
@@ -21,15 +21,15 @@ function setup() {
   grid = create3DArray(gridSize, gridSize, gridSize);
 
   //alt.
-  selectionBlock = new Selection(gridSize, 10, 10);
+  select = new Selection(gridSize, 10, 10);
 
 
 }
 
 function draw() {
   background(220);
-  // displayCamera();
-  // altdisplayDGrid();
+  displayCamera();
+  altDisplay3DGrid();
 }
 
 function displayCamera() {
