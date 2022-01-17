@@ -9,7 +9,7 @@ let cellSize = 15;
 let d = 1; // represents distance/spacing between blocks
 let blockArray = [];
 let selectQuadrant; //xy, xz, yz
-let select;
+// let select;
 
 //alt. 2 variables:
 
