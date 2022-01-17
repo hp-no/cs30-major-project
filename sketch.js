@@ -4,74 +4,125 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-//global variables
-let rectColor = "white";
+// variables
+let directionalLight, grid, gridHelper, mouse, raycaster, selectedBlock = null;
+let gridSize = 10;
+let spacing = 1;
 
-let colorArray = [0xff0000, 0xffbf00, 0x00ff00, 0x0080ff, 0xbf00ff, 0xff66ff, 0xff0080];
-let cubeArray;
-let currentCube = 0; // represents position within the cube array
-
-
-// three.js setup
+// three.js setup initialization
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement) ;
 
-camera.position.z = 5;
+mouse = new THREE.Vector2();
+raycaster = new THREE.Raycaster();
 
 
+// scene stuff (camera, background, lights, etc)
+camera.position.set(13, 13, 13);
+camera.lookAt(0,0,0);
+scene.background = new THREE.Color("lightgrey");
+directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+scene.add(directionalLight);
 
-function setup() {
-  createCanvas(windowWidth*0.85, windowHeight*0.95);
+// create a grid of cubes
+grid = new THREE.Object3D();
+for (let z=0; z<gridSize; z++) {
+  for (let y=0; y<gridSize; y++) {
+    for (let x=0; x<gridSize; x++) {
+      //create box
+      let box = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshToonMaterial({color: 0x00ffff})); //aqua color
+      box.position.set((x-gridSize/2) * spacing, (y-gridSize/2) * spacing, (z-gridSize/2) * spacing);
+      // //create box outline
+      // let boxEdges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
+      // let outline = new THREE.LineSegments(boxEdges, new THREE.LineBasicMaterial({color: 0xffffff}));
+      // outline.position.set((x-gridSize/2) * spacing, (y-gridSize/2) * spacing, (z-gridSize/2) * spacing);
 
-  button = createButton("Color change");
-  button.position(width*0.20, height*0.9);
-  button.mousePressed(changeCubeColor);
-
-  cubeArray = createCubeArray();
-  scene.add(cubeArray[0]);
+      grid.add(box);
+      // grid.add(outline);
+    }
+  }
 }
-function draw() {
-  //p5js
-  fill(rectColor)
-  rect(width*0.15, height*0.86, 145, 75);
+scene.add(grid);
 
-  //three.js
-  renderer.render( scene, camera );
+
+// add grid guidelines
+gridHelper = new THREE.GridHelper(20, 20, 0xff0000);
+scene.add(gridHelper);
+
+let edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
+let line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
+scene.add(line);
+
+
+function resetMaterials() {
+  for (let i=0; i<grid.children.length; i++) {
+    if (grid.children[i].material) {
+      grid.children[i].material.color = grid.children[i] === selectedBlock ? grid.children[i].material.color.setHex(0x0080ff) : grid.children[i].material.color.setHex(0x00ffff);
+      grid.children[i].material.opacity = 1.0; 
+      // grid.children[i].material.opacity = grid.children[i] === selectedBlock ? 0.5 : 1.0; 
+    }
+  }
+}
+
+function hoverBlock() {
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(grid.children);
+  for (let i=0; i<intersects.length; i++) {
+    intersects[i].object.material.transparent = true;
+    intersects[i].object.material.opacity = 0; // 0.5
+    // intersects[i].object.material.color.setHex(0xff0080);
+  }
 }
 
 function animate() {
-  requestAnimationFrame( animate );
-
-  cubeArray[currentCube].rotation.x += 0.01;
-  cubeArray[currentCube].rotation.y += 0.01;
+  // resetMaterials(); //uncomment later for selection function
+  hoverBlock();
+  rotateCube(); // change to a manual rotation mechanic rather than a constant loop
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
 }
-
 animate();
 
-function createCubeArray() {
-  let theArray = [];
-  for (let i=0; i<colorArray.length; i++) {
-    //create different coloured cubes
-    const geometry = new THREE.BoxGeometry();
-    let material = new THREE.MeshBasicMaterial( { color: colorArray[i] } );
-    const cube = new THREE.Mesh( geometry, material );
-
-    theArray.push(cube);
-  }
-  return theArray;
+// mouse position detection
+function onMouseMove(event) {
+	// calculate mouse position in normalized device coordinates
+	// (-1 to +1) for both components
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 }
 
-function changeCubeColor() {
-  scene.remove ( cubeArray[currentCube] ); // remove the current cube color
-  if (currentCube === cubeArray.length-1) {
-    currentCube = 0;
+//select function
+function onClick(event) {
+  raycaster.setFromCamera(mouse, camera);
+  let intersects = raycaster.intersectObjects(grid.children);
+  if (intersects.length > 0) {
+    selectedBlock = intersects[0].object;
   }
-  else {
-    currentCube++;
-  }
-  scene.add ( cubeArray[currentCube] ) ; // add the next cube color
 }
+
+window.addEventListener("mousemove", onMouseMove, false);
+window.addEventListener("click", onClick);
+
+
+function rotateCube() {
+  grid.rotation.x += 0.01;
+  grid.rotation.y += 0.01;
+}
+
+// //p5js stuff
+
+// function setup() {
+//   createCanvas(windowWidth*0.85, windowHeight*0.95);
+// }
+// function draw() {
+//   //p5js
+
+//   // // three.js
+//   // rotateCube();
+// }
+
