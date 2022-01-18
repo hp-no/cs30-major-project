@@ -45,7 +45,7 @@ raycaster = new THREE.Raycaster();
     for (let y=0; y<gridSize; y++) {
       for (let x=0; x<gridSize; x++) {
         //create box
-        let box = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1),
+        let box = new THREE.Mesh(new THREE.SphereGeometry(), // new THREE.Mesh(new THREE.CubeGeometry(1,1,1)
           new THREE.MeshToonMaterial({color: 0x00ffff})); //aqua color
         box.position.set((x-gridSize/2) * spacing, (y-gridSize/2) * spacing, (z-gridSize/2) * spacing);
         // //create box outline
@@ -74,9 +74,8 @@ scene.add(line);
 function resetMaterials() {
   for (let i=0; i<grid.children.length; i++) {
     if (grid.children[i].material) {
-      grid.children[i].material.color = grid.children[i] === selectedBlock ? grid.children[i].material.color.set(0x0080ff) : grid.children[i].material.color.set(0x00ffff);
-      grid.children[i].material.opacity = 1.0; 
-      // grid.children[i].material.opacity = grid.children[i] === selectedBlock ? 0.5 : 1.0; 
+      // grid.children[i].material.color = grid.children[i] === selectedBlock ? grid.children[i].material.color.set(0x0080ff) : grid.children[i].material.color.set(0x00ffff);
+      grid.children[i].material.color.set(0x00ffff);
     }
   }
 }
@@ -85,16 +84,24 @@ function hoverBlock() {
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(grid.children);
   for (let i=0; i<intersects.length; i++) {
-    //**** try making intersects[i] to intersects[0], will it only apply the hover on 1 block at a time....?
+    intersects[0].object.material.transparent = true;
+    intersects[0].object.material.color.set(0x0080ff);
+  }
+}
+
+function sculptBlock() {
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(grid.children);
+  for (let i=0; i<intersects.length; i++) {
     intersects[i].object.material.transparent = true;
-    intersects[i].object.material.opacity = 0; // 0.5
-    // intersects[i].object.material.color.set(0xff0080);
+    intersects[i].object.material.opacity = 0;
+
   }
 }
 
 
 function animate() {
-  // resetMaterials(); //uncomment later for selection function
+  resetMaterials(); //uncomment later for selection function
   hoverBlock();
   rotateCube(); // change to a manual rotation mechanic rather than a constant loop
   requestAnimationFrame(animate);
@@ -117,7 +124,8 @@ function onClick(event) {
   raycaster.setFromCamera(mouse, camera);
   let intersects = raycaster.intersectObjects(grid.children);
   if (intersects.length > 0) {
-    selectedBlock = intersects[0].object;
+    // selectedBlock = intersects[0].object;
+    // intersects[0].object.material.opacity = 0;
   }
 }
 
@@ -130,16 +138,13 @@ function rotateCube() { //temp. perhaps use for a "preview" mechanic, but for pr
   grid.rotation.y += 0.01;
 }
 
-//p5js stuff
+
 
 // function setup() {
 //   createCanvas(windowWidth*0.85, windowHeight*0.95);
-// }
-// function draw() {
-//   //p5js
-//   keyTyped();
 
-//   // // three.js
-//   // rotateCube();
-// }
-
+function draw() {
+  if (keyIsDown(90)) {  // z 
+    sculptBlock();
+  }
+}
