@@ -5,7 +5,7 @@
 // - describe what you did to take this project "above and beyond"
 
 // variables
-let directionalLight, grid, gridHelper, mouse, raycaster, selectedBlock = null;
+let grid, gridHelper, mouse, raycaster, selectedBlock = null, controls;
 let gridSize = 10;
 let spacing = 1;
 
@@ -20,8 +20,13 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement) ;
 scene.background = new THREE.Color("lightgrey");
 
+//variables for mouse interaction
 mouse = new THREE.Vector2();
 raycaster = new THREE.Raycaster();
+controls = new THREE.OrbitControls(camera, renderer.domElement); // mouse-drag camera movement
+
+
+
 
 // function keyTyped() { //temporary function, replace with a button + mousePressed combo later...
 //   if (key === "c") { // the ' c ' key
@@ -36,7 +41,7 @@ raycaster = new THREE.Raycaster();
   camera.position.set(13, 13, 13);
   camera.lookAt(0,0,0);
   scene.background = new THREE.Color("lightgrey");
-  directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+  const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
   scene.add(directionalLight);
 
   // create a grid of cubes
@@ -89,27 +94,23 @@ function hoverBlock() {
   }
 }
 
-function sculptBlock() {
+function sculptBlock() { // when 'z' key is down
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(grid.children);
   for (let i=0; i<intersects.length; i++) {
     intersects[i].object.material.transparent = true;
     intersects[i].object.material.opacity = 0;
-
   }
 }
-
 
 function animate() {
   resetMaterials(); //uncomment later for selection function
   hoverBlock();
-  rotateCube(); // change to a manual rotation mechanic rather than a constant loop
+  controls.update();
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 }
 animate();
-
-
 
 // mouse position detection
 function onMouseMove(event) {
@@ -133,18 +134,11 @@ window.addEventListener("mousemove", onMouseMove, false);
 window.addEventListener("click", onClick);
 
 
-function rotateCube() { //temp. perhaps use for a "preview" mechanic, but for practical usage, use a manual roatation mechanic (keyboard or mouse operated)
-  grid.rotation.x += 0.01;
-  grid.rotation.y += 0.01;
-}
-
-
-
 // function setup() {
 //   createCanvas(windowWidth*0.85, windowHeight*0.95);
 
 function draw() {
-  if (keyIsDown(90)) {  // z 
+  if (keyIsDown(90)) {  // 'z' key
     sculptBlock();
   }
 }
