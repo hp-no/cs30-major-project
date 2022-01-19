@@ -9,7 +9,7 @@ let grid, gridHelper, mouse, raycaster, selectedBlock = null, controls;
 let gridSize = 10;
 let spacing = 1;
 
-let state = "empty"; //temp.-- replace with title/menu screen later..
+let screen = "empty"; //temp.-- replace with title/menu screen later..
 
 // three.js setup initialization
 const scene = new THREE.Scene();
@@ -35,17 +35,18 @@ controls = new THREE.OrbitControls(camera, renderer.domElement); // mouse-drag c
 //   } 
 // }
 
-// function loadCubeSetup () {
-
+function loadSceneSetup() {
   // scene stuff (camera, background, lights, etc)
   camera.position.set(13, 13, 13);
   camera.lookAt(0,0,0);
   scene.background = new THREE.Color("lightgrey");
   const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
   scene.add(directionalLight);
+}
 
+function loadCubeSetup () {
   // create a grid of cubes
-  grid = new THREE.Object3D();
+  cubeGrid = new THREE.Object3D();
   for (let z=0; z<gridSize; z++) {
     for (let y=0; y<gridSize; y++) {
       for (let x=0; x<gridSize; x++) {
@@ -58,14 +59,14 @@ controls = new THREE.OrbitControls(camera, renderer.domElement); // mouse-drag c
         // let outline = new THREE.LineSegments(boxEdges, new THREE.LineBasicMaterial({color: 0xffffff}));
         // outline.position.set((x-gridSize/2) * spacing, (y-gridSize/2) * spacing, (z-gridSize/2) * spacing);
 
-        grid.add(box);
-        // grid.add(outline);
+        cubeGrid.add(box);
+        // cubeGrid.add(outline);
       }
     }
   }
-  scene.add(grid);
+  scene.add(cubeGrid);
   
-// }
+}
 
 // grid guidelines/assistance
 gridHelper = new THREE.GridHelper(20, 20, 0xff0000);
@@ -87,16 +88,17 @@ function resetMaterials() {
 
 function hoverBlock() {
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(grid.children);
+  const intersects = raycaster.intersectObjects(cubeGrid.children);
   for (let i=0; i<intersects.length; i++) {
     intersects[0].object.material.transparent = true;
     intersects[0].object.material.color.set(0x0080ff);
   }
 }
 
+//**find a method to slow down this process, so that it doesnt immediately sculpt through multiple layers at once
 function sculptBlock() { // when 'z' key is down
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(grid.children);
+  const intersects = raycaster.intersectObjects(cubeGrid.children);
   for (let i=0; i<intersects.length; i++) {
     intersects[i].object.material.transparent = true;
     intersects[i].object.material.opacity = 0;
@@ -120,10 +122,10 @@ function onMouseMove(event) {
   mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 }
 
-//selection function
+//possible selection function
 function onClick(event) {
   raycaster.setFromCamera(mouse, camera);
-  let intersects = raycaster.intersectObjects(grid.children);
+  let intersects = raycaster.intersectObjects(cubeGrid.children);
   if (intersects.length > 0) {
     // selectedBlock = intersects[0].object;
     // intersects[0].object.material.opacity = 0;
@@ -134,10 +136,43 @@ window.addEventListener("mousemove", onMouseMove, false);
 window.addEventListener("click", onClick);
 
 
-// function setup() {
-//   createCanvas(windowWidth*0.85, windowHeight*0.95);
+//temp space for global varibles:
+let cubeButton, sphereButton, flatButton, sceneryButton;
+
+function setup() {
+  cubeButton = {
+    x: width/3,
+    y: height/2,
+    
+  }
+
+}
 
 function draw() {
+  if (screen === "selectionMenu") {
+    //
+  }
+
+  if () { //when cubeButton pressed
+    loadSceneSetup();
+    loadCubeSetup();
+  }
+  if () { //when sphereButton pressed
+    loadSceneSetup();
+    loadSphereSetup();
+  }
+  if () { //when flatButton pressed
+    loadSceneSetup();
+    loadFlatSetup();
+  }
+
+//when returned to the selection/title menu
+  if () { //if previous menu was the cubeGrid
+    scene.remove(cubeGrid);
+  }
+
+
+  //enabling sculpt function
   if (keyIsDown(90)) {  // 'z' key
     sculptBlock();
   }
