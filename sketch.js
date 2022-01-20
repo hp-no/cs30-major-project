@@ -5,7 +5,7 @@
 // - describe what you did to take this project "above and beyond"
 
 // variables
-let grid, gridHelper, mouse, raycaster, selectedBlock = null, controls;
+let grid, gridHelper, mouse, raycaster, selectedBlock = null, controls, inputColor;
 let gridSize = 10;
 let spacing = 1;
 
@@ -80,8 +80,11 @@ scene.add(line);
 function resetMaterials() {
   for (let i=0; i<grid.children.length; i++) {
     if (grid.children[i].material) {
-      // grid.children[i].material.color = grid.children[i] === selectedBlock ? grid.children[i].material.color.set(0x0080ff) : grid.children[i].material.color.set(0x00ffff);
-      grid.children[i].material.color.set(0x00ffff);
+      // grid.children[i] === selectedBlock ? grid.children[i].material.color.set(0x0080ff) : grid.children[i].material.color.set(0x00ffff);
+      
+      if (grid.children[i].material.color !== inputColor) {
+        grid.children[i].material.color.set(0x00ffff);
+      }
     }
   }
 }
@@ -105,6 +108,15 @@ function sculptBlock() { // when 'z' key is down
   }
 }
 
+function paintBlock() { // when the 'c' key is down
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(cubeGrid.children);
+  for (let i=0; i<intersects.length; i++) {
+    if (intersects[i].object.material.opacity !== 0) {
+      intersects[i].object.material.color.set(inputColor.color);
+    }
+  }
+}
 function animate() {
   resetMaterials(); //uncomment later for selection function
   hoverBlock();
@@ -129,6 +141,7 @@ function onClick(event) {
   if (intersects.length > 0) {
     // selectedBlock = intersects[0].object;
     // intersects[0].object.material.opacity = 0;
+
   }
 }
 
@@ -143,37 +156,40 @@ function setup() {
   cubeButton = {
     x: width/3,
     y: height/2,
-    
-  }
+  };
 
+  inputColor = createColorPicker("#ed225d");
+  inputColor.position(width*0.95, height/2);
 }
 
 function draw() {
-  if (screen === "selectionMenu") {
-    //
-  }
+//   if (screen === "selectionMenu") {
+//     //
+//   }
 
-  if () { //when cubeButton pressed
-    loadSceneSetup();
-    loadCubeSetup();
-  }
-  if () { //when sphereButton pressed
-    loadSceneSetup();
-    loadSphereSetup();
-  }
-  if () { //when flatButton pressed
-    loadSceneSetup();
-    loadFlatSetup();
-  }
+//   if () { //when cubeButton pressed
+//     loadSceneSetup();
+//     loadCubeSetup();
+//   }
+//   if () { //when sphereButton pressed
+//     loadSceneSetup();
+//     loadSphereSetup();
+//   }
+//   if () { //when flatButton pressed
+//     loadSceneSetup();
+//     loadFlatSetup();
+//   }
 
-//when returned to the selection/title menu
-  if () { //if previous menu was the cubeGrid
-    scene.remove(cubeGrid);
-  }
-
+// //when returned to the selection/title menu
+//   if () { //if previous menu was the cubeGrid
+//     scene.remove(cubeGrid);
+//   }
 
   //enabling sculpt function
   if (keyIsDown(90)) {  // 'z' key
     sculptBlock();
+  }
+  if (keyIsDown(67)) { // 'c' key
+    paintBlock();
   }
 }
