@@ -5,7 +5,7 @@
 // - describe what you did to take this project "above and beyond"
 
 // variables
-let grid, gridHelper, mouse, raycaster, selectedBlock = null, controls, inputColor;
+let cubeGrid, gridHelper, mouse, raycaster, selectedBlock = null, controls, inputColor;
 let gridSize = 10;
 let spacing = 1;
 
@@ -25,15 +25,15 @@ mouse = new THREE.Vector2();
 raycaster = new THREE.Raycaster();
 controls = new THREE.OrbitControls(camera, renderer.domElement); // mouse-drag camera movement
 
+// grid guidelines/assistance
+gridHelper = new THREE.GridHelper(20, 20, 0xff0000);
+scene.add(gridHelper);
+
+let edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
+let line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
+scene.add(line);
 
 
-
-// function keyTyped() { //temporary function, replace with a button + mousePressed combo later...
-//   if (key === "c") { // the ' c ' key
-//     loadCubeSetup();
-//     state = "cube";
-//   } 
-// }
 
 function loadSceneSetup() {
   // scene stuff (camera, background, lights, etc)
@@ -68,15 +68,6 @@ function loadCubeSetup () {
   
 }
 
-// grid guidelines/assistance
-gridHelper = new THREE.GridHelper(20, 20, 0xff0000);
-scene.add(gridHelper);
-
-let edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
-let line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
-scene.add(line);
-
-
 function resetMaterials() {
   for (let i=0; i<grid.children.length; i++) {
     if (grid.children[i].material) {
@@ -98,13 +89,13 @@ function hoverBlock() {
   }
 }
 
-//**find a method to slow down this process, so that it doesnt immediately sculpt through multiple layers at once
 function sculptBlock() { // when 'z' key is down
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(cubeGrid.children);
   for (let i=0; i<intersects.length; i++) {
     intersects[i].object.material.transparent = true;
     intersects[i].object.material.opacity = 0;
+    wait(250); // pauses for a quarter of a second before deleting another block/area
   }
 }
 
@@ -117,6 +108,7 @@ function paintBlock() { // when the 'c' key is down
     }
   }
 }
+
 function animate() {
   resetMaterials(); //uncomment later for selection function
   hoverBlock();
@@ -124,18 +116,15 @@ function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 }
-animate();
 
-// mouse position detection
+
 function onMouseMove(event) {
-  // calculate mouse position in normalized device coordinates
-  // (-1 to +1) for both components
+  // calculate mouse position in normalized device coordinates, (-1 to +1) for both components
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 }
 
-//possible selection function
-function onClick(event) {
+function onClick(event) { //possible selection function
   raycaster.setFromCamera(mouse, camera);
   let intersects = raycaster.intersectObjects(cubeGrid.children);
   if (intersects.length > 0) {
@@ -145,11 +134,27 @@ function onClick(event) {
   }
 }
 
+// Wait function Ver. 1 --> stops code execution
+// a potential method to slow down/delay the sculpt-deletion process, multiple layers are not deleted all at once
+function wait(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  while (currentDate - date < milliseconds) {
+    currentDate = Date.now;
+  }
+}
+
+// Wait function Ver. 2 --> Makes async events sync using the Promise class; doesn't stop rest of code from executing
+function waitAlt(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+animate();
 window.addEventListener("mousemove", onMouseMove, false);
 window.addEventListener("click", onClick);
 
 
-//temp space for global varibles:
+//temp space for global varibles for p5.js:
 let cubeButton, sphereButton, flatButton, sceneryButton;
 
 function setup() {
@@ -158,6 +163,7 @@ function setup() {
     y: height/2,
   };
 
+  // user can pick any color value for their "paintbrush" color
   inputColor = createColorPicker("#ed225d");
   inputColor.position(width*0.95, height/2);
 }
