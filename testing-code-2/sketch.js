@@ -1,272 +1,201 @@
-// CS30 Major Project: Old project file
+// CS30 Major Project: (temporary title)
 // Your Name
 // Date
-//
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-//Use setCamera() function for an opening menu screen? or a finished product showcase?
-//Nice to have: a room of containing all created pieces to walk and look around in
+// variables
+let cubeGrid, gridHelper, mouse, raycaster, selectedBlock = null, controls, inputColor;
+let gridSize = 10;
+let spacing = 1;
 
-//"object" is a temporary variable name for the art piece
+let screen = "empty"; //temp.-- replace with title/menu screen later..
 
-//global variables
-let speed = 10;
-let objectdx = 0;
-let objectdy = 0;
-let v = 1;
-let selected; //temp.
-let mouseLocation;
-let blockArray = [];
+// three.js setup initialization
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-let theMode = "view"; // allows for a single key to trigger multiple functions depending on the mode
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement) ;
+scene.background = new THREE.Color("lightgrey");
 
-//grid parameters
-let gridSize = 20;
-let grid;
-let cellSize;
+//variables for mouse interaction
+mouse = new THREE.Vector2();
+raycaster = new THREE.Raycaster();
+controls = new THREE.OrbitControls(camera, renderer.domElement); // mouse-drag camera movement
 
-//camera parameters
-let cameraZ = -50; //-100
-let centerX = 0; //50
-let centerY = 0;
-let centerZ = 50; //75
+// grid guidelines/assistance
+gridHelper = new THREE.GridHelper(20, 20, 0xff0000);
+scene.add(gridHelper);
 
-function setup() {
-  createCanvas(windowWidth*0.85, windowHeight*0.95, WEBGL);
-  angleMode(DEGREES);
-  // cellSize = height/gridSize;
-  cellSize = 15;
-  grid = createEmpty3DArray(gridSize, gridSize, gridSize);
-  selected = new Selection();
+let edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
+let line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
+scene.add(line);
+
+
+
+function loadSceneSetup() {
+  // scene stuff (camera, background, lights, etc)
+  camera.position.set(13, 13, 13);
+  camera.lookAt(0,0,0);
+  scene.background = new THREE.Color("lightgrey");
+  const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+  scene.add(directionalLight);
 }
 
-function draw() {
-  background(220);
-  // displayObject();
-  // rotationMovement();
-  displayCamera();
- 
-  // perspectiveMovement();
-  display3DGrid();
-  
-
-}
-
-function keyPressed() {
-  // if (key === "w") { // up
-  //   select.moveTo(select.x, select.y-1);
-  // }
-  // if (key === "a") { // left
-  //   select.moveTo(select.x-1, select.y);
-  // }
-  // if (key === "s") { // down
-  //   select.moveTo(select.x, select.y+1);
-  // }
-  // if (key === "d") { // right
-  //   select.moveTo(select.x+1, select.y);
-  // }
-
-}
-
-
-function mousePressed() { //rename later
-  // mouseLocation = {mouseX, mouseY};
-  
-  let cellX = Math.floor(mouseX/cellSize);
-  let cellY = Math.floor(mouseY/cellSize);
-
-  let cellZ = Math.floor(mouseY/cellSize);
-
-  if (grid[cellZ][cellY][cellX] === 0) {
-    grid[cellZ][cellY][cellX] = 1;
-  }
-  else if (grid[cellZ][cellY][cellX] === 1) {
-    grid[cellZ][cellY][cellX] = 0;
-  }
-}
-
-function displayCamera() {
-  translate(0, 0, 0);
-  // camera(-150 , -300, cameraZ, //-150, -300, camZ
-  //   centerX, centerY, centerZ,
-  //   0, 1, 0);
-  // camera(0, 0, cameraZ, centerX, centerY, centerZ, 0, 1, 0); // explore the functions of the last 3 parameters
-
-  camera(-200, -200, -150, //dist.
-    0, 0, 50,
-    0, 1, 0);
-
-  // camera(-100, -100, -50,
-  //   0, 0, 50,
-  //   0, 1, 0);
-
-}
-
-function display3DGrid() { //find a way to center the grid to 0, 0
+function loadCubeSetup () {
+  // create a grid of cubes
+  cubeGrid = new THREE.Object3D();
   for (let z=0; z<gridSize; z++) {
     for (let y=0; y<gridSize; y++) {
       for (let x=0; x<gridSize; x++) {
-        if (grid[z][y][x] === 0) {
-          // fill("white");
-          let theBlock = new Block(x,y,z,cellSize,"white");
-          theBlock.display();
-          blockArray.push(theBlock);
-        }
-        else if (grid[z][y][x] === 1) {
-          // fill("black"); 
-          let theBlock = new Block(x,y,z,cellSize,"black");
-          theBlock.display();
-          blockArray.push(theBlock);
-        }
-        else if (grid[z][y][x] === 2) {
-          //empty space
-          let theBlock = new Block(x,y,z,cellSize,"white");
-          blockArray.push(theBlock);
-        }
+        //create box
+        let box = new THREE.Mesh(new THREE.BoxGeometry(1,1,1,), // new THREE.Mesh(new THREE.SphereGeometry()
+          new THREE.MeshToonMaterial({color: 0x00ffff})); //aqua color
+        box.position.set((x-gridSize/2) * spacing, (y-gridSize/2) * spacing, (z-gridSize/2) * spacing);
+        // //create box outline
+        // let boxEdges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
+        // let outline = new THREE.LineSegments(boxEdges, new THREE.LineBasicMaterial({color: 0xffffff}));
+        // outline.position.set((x-gridSize/2) * spacing, (y-gridSize/2) * spacing, (z-gridSize/2) * spacing);
+
+        cubeGrid.add(box);
+        // cubeGrid.add(outline);
+      }
+    }
+  }
+  scene.add(cubeGrid);
+  
+}
+
+function resetMaterials() {
+  for (let i=0; i<cubeGrid.children; i++) {
+    if (cubeGrid.children[i].material) {
+      // grid.children[i] === selectedBlock ? grid.children[i].material.color.set(0x0080ff) : grid.children[i].material.color.set(0x00ffff);
+      
+      if (cubeGrid.children[i].material.color !== inputColor) {
+        cubeGrid.children[i].material.color.set(0x00ffff);
       }
     }
   }
 }
 
-function createEmpty3DArray(rows, cols, layers) {
-  //currently a "randomized" 3D array
-  let grid = [];
-  for (let z=0; z<layers; z++) {
-    grid.push([]);
-    for (let y=0; y<rows; y++) {
-      grid[z].push([]);
-      for (let x=0; x<cols; x++) {
-        //create random 3D array
-        if (random(100) < 50) {
-          grid[z][y].push(2);
-        }
-        else if (random(100) > 50) {
-          grid[z][y].push(1);
-        }
-        else {
-          grid[z][y].push(0);
-        }
-        
-      }
+function hoverBlock() {
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(cubeGrid.children);
+  for (let i=0; i<intersects.length; i++) {
+    intersects[0].object.material.transparent = true;
+    intersects[0].object.material.color.set(0x0080ff);
+  }
+}
+
+function sculptBlock() { // when 'z' key is down
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(cubeGrid.children);
+  for (let i=0; i<intersects.length; i++) {
+    intersects[i].object.material.transparent = true;
+    intersects[i].object.material.opacity = 0;
+    wait(250); // pauses for a quarter of a second before deleting another block/area
+  }
+}
+
+function paintBlock() { // when the 'c' key is down
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(cubeGrid.children);
+  for (let i=0; i<intersects.length; i++) {
+    if (intersects[i].object.material.opacity !== 0) {
+      intersects[i].object.material.color.set(inputColor.color);
     }
   }
-  return grid;
 }
 
-function displayObject() {
-  rotateX(objectdx); // rotate(temp, createVector(width/2));
-  rotateY(objectdy);
-  push();
-  stroke("brown");
-  fill("orange");
-  translate(100, -100, 100);
-  sphere(width*0.1, 16, 4);
-  pop();
+function animate() {
+  resetMaterials(); //uncomment later for selection function
+  hoverBlock();
+  controls.update();
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
 }
 
-function rotationMovement() {
-  if (keyIsDown(RIGHT_ARROW)) {
-    objectdy -= 2;
-  }
-  if (keyIsDown(LEFT_ARROW)) {
-    objectdy += 2;
-  }
-  if (keyIsDown(UP_ARROW)) { 
-    objectdx += 2;
-  }
-  if (keyIsDown(DOWN_ARROW)) {
-    objectdx -= 2;
-  }
+
+function onMouseMove(event) {
+  // calculate mouse position in normalized device coordinates, (-1 to +1) for both components
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 }
 
-function perspectiveMovement() {
-  if (theMode === "view") {
-    // if (keyIsDown(87)) { // 'w' or move forward
-    //   if (cameraZ > 80) {
-    //     cameraZ -= 7;
-    //   }
-    // }
-  
-    // if (keyIsDown(83)) { // 's' or move backward 
-    //   if (cameraZ < 400) {
-    //     cameraZ += 10;
-    //   }
-    // } 
-  
-    if (keyIsDown(65)) { // 'a' or turn left
-      if (centerX > -400) {
-        centerX -= 7;
-      }
-    } 
-  
-    if (keyIsDown(68)) { // 'd' or turn right
-      if (centerX < 400) {
-        centerX += 7;
-      }
-    } 
-  
-    if (keyIsDown(87)) { //  'w' or look up
-      if (centerY < 400) {
-        centerY -= 5;
-      }
-    }
-  
-    if (keyIsDown(83)) { // 's' or look down
-      if (centerY > -400) {
-        centerY += 5;
-      }
-    }
-  }
-  //temp.
-  // if (keyIsDown(RIGHT_ARROW)) {
-  //   v -= 1;
-  // }
-  // if (keyIsDown(LEFT_ARROW)) {
-  //   v += 1;
-  // }
-}
+function onClick(event) { //possible selection function
+  raycaster.setFromCamera(mouse, camera);
+  let intersects = raycaster.intersectObjects(cubeGrid.children);
+  if (intersects.length > 0) {
+    // selectedBlock = intersects[0].object;
+    // intersects[0].object.material.opacity = 0;
 
-class Selection { //temp. for testing
-  constructor(x, y, z, cellSize) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.size = cellSize;
-  }
-
-  display() {
-    grid[this.z][this.y][this.x] = 3;
-  }
-
-  moveTo() {
-    //... add remaining code here
-    x
   }
 }
 
-class Block {
-  constructor(x, y, z, cellSize, theColor) {
-    this.x = x*cellSize;
-    this.y = y*cellSize;
-    this.z = z*cellSize;
-    this.size = cellSize;
-    this.theColor = theColor; //placeholder used for testing
-  }
-
-  display() {
-    push();
-    // v = !v;
-    translate(this.x*v, this.y*v, this.z*v); //sets the xyz location for each box
-    stroke(200);
-    fill(this.theColor);
-    box(this.size);
-    pop();
+// Wait function Ver. 1 --> stops code execution
+// a potential method to slow down/delay the sculpt-deletion process, multiple layers are not deleted all at once
+function wait(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  while (currentDate - date < milliseconds) {
+    currentDate = Date.now;
   }
 }
 
-//Note: perspective movement for looking left-right/up-down based off of mouse movement?
-// --> would make it so that wasd keys would be used for moving forward-backward/left-right
+// Wait function Ver. 2 --> Makes async events sync using the Promise class; doesn't stop rest of code from executing
+function waitAlt(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
 
-// --> center the grid (translucent --> transparent)
-// --> **array for all the boxes (makes addition(?) and deletion of boxes more efficient) --> objects?
+animate();
+window.addEventListener("mousemove", onMouseMove, false);
+window.addEventListener("click", onClick);
+
+
+//temp space for global varibles for p5.js:
+let cubeButton, sphereButton, flatButton, sceneryButton;
+
+function setup() {
+  // cubeButton = {
+  //   x: width/3,
+  //   y: height/2,
+  // };
+
+  // user can pick any color value for their "paintbrush" color
+  inputColor = createColorPicker("#ed225d");
+  inputColor.position(width*0.95, height/2);
+}
+
+function draw() {
+//   if (screen === "selectionMenu") {
+//     //
+//   }
+
+//   if () { //when cubeButton pressed
+//     loadSceneSetup();
+//     loadCubeSetup();
+//   }
+//   if () { //when sphereButton pressed
+//     loadSceneSetup();
+//     loadSphereSetup();
+//   }
+//   if () { //when flatButton pressed
+//     loadSceneSetup();
+//     loadFlatSetup();
+//   }
+
+// //when returned to the selection/title menu
+//   if () { //if previous menu was the cubeGrid
+//     scene.remove(cubeGrid);
+//   }
+
+  //enabling sculpt function
+  if (keyIsDown(90)) {  // 'z' key
+    sculptBlock();
+  }
+  if (keyIsDown(67)) { // 'c' key
+    paintBlock();
+  }
+}
