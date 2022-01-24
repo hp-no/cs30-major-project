@@ -5,13 +5,17 @@
 // - describe what you did to take this project "above and beyond"
 
 // variables
-let cubeGrid, paintCanvas, gridHelper, mouse, raycaster, selectedBlock = null, controls, inputColor, theColor;
-let cubeImg;
+let cubeGrid, paintCanvas, mouse, raycaster, controls, inputColor, theColor;
+let cubeImg, canvasImg, brushIcon, chiselIcon, bgm;
+let cubeButton, canvasButton, instructions, text1, text2, text3, text4;
+
 let gridSize = 15;
 let spacing = 1;
 
 let cDown = false;
 let cubeLoaded = false;
+let canvasLoaded = false;
+let showControls = false;
 
 let screen = "selectionMenu";
 
@@ -29,31 +33,24 @@ mouse = new THREE.Vector2();
 raycaster = new THREE.Raycaster();
 controls = new THREE.OrbitControls(camera, renderer.domElement); // mouse-drag camera movement
 
-// // grid guidelines/assistance
-// gridHelper = new THREE.GridHelper(20, 20, 0xff0000);
-// scene.add(gridHelper);
-
-let edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
-let line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
-scene.add(line);
-
 // scene setup
+camera.position.set(7, 6.5, 8);
+camera.lookAt(0,0,0)
+scene.background = new THREE.Color("lightgrey");
 
+const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+scene.add(directionalLight);
 
-// function loadSceneSetup() {
-  // scene stuff (camera, background, lights, etc)
-  camera.position.set(0, 10, 10);
-  camera.lookAt(0,0,0)
-  scene.background = new THREE.Color("lightgrey");
-  const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-  directionalLight.position.set(5, 5, 5);
-  scene.add(directionalLight);
-// }
-
+  // display small center cube
+  if (!canvasLoaded) {
+    let edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
+    let centerCube = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
+    scene.add(centerCube);
+  }
 
 function loadCubeSetup () {
-  screen = "creationMenu";
   camera.position.set(17, 17, 17);
+  directionalLight.position.set(5, 5, 0);
 
   // create a grid of cubes
   cubeGrid = new THREE.Object3D();
@@ -62,7 +59,7 @@ function loadCubeSetup () {
       for (let x=0; x<gridSize; x++) {
 
         let box = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),
-          new THREE.MeshToonMaterial({color: 0x00ffff})); //aqua color
+          new THREE.MeshToonMaterial({color: 0xffffff})); // white
         box.position.set((x-gridSize/2) * spacing, (y-gridSize/2) * spacing, (z-gridSize/2) * spacing);
 
         cubeGrid.add(box);
@@ -75,8 +72,9 @@ function loadCubeSetup () {
 }
 
 function loadPaintCanvas() {
-  camera.position.set(0, 5, 40);
+  camera.position.set(0, 4, 40);
   camera.lookAt(20, 20, 0);
+  directionalLight.position.set(0, 0, 5);
 
   // camera.position.set(0, 1, 15);
   // camera.lookAt(10, 10, 0);
@@ -95,6 +93,7 @@ function loadPaintCanvas() {
       }
     }
   scene.add(paintCanvas);
+  canvasLoaded = true;
 }
 
 function resetMaterials() {
@@ -114,11 +113,22 @@ function resetMaterials() {
   }
 }
 
-function resetCube() {
-  for (let i=0; i<cubeGrid.children.length; i++) {
-    if (cubeGrid.children[i].material) {
-      cubeGrid.children[i].material.opacity = 1;
-      cubeGrid.children[i].material.color.set(0x00ffff);
+function resetShape() {
+  if (cubeLoaded) { // reset cube
+    for (let i=0; i<cubeGrid.children.length; i++) {
+      if (cubeGrid.children[i].material) {
+        cubeGrid.children[i].material.opacity = 1;
+        cubeGrid.children[i].material.color.set(0xffffff);
+      }
+    }
+  }
+
+  if (canvasLoaded) { // reset or clear paint canvas
+    for (let i=0; i<paintCanvas.children.length; i++) {
+      if (paintCanvas.children[i].material) {
+        paintCanvas.children[i].material.opacity = 1;
+        paintCanvas.children[i].material.color.set(0xffffff);
+      }
     }
   }
 }
@@ -134,11 +144,13 @@ function hoverBlock() {
 }
 
 function sculptBlock() { // when 'z' key is down
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(cubeGrid.children);
-  for (let i=0; i<intersects.length; i++) {
-    intersects[i].object.material.transparent = true;
-    intersects[i].object.material.opacity = 0;
+  if (cubeLoaded) {
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(cubeGrid.children);
+    for (let i=0; i<intersects.length; i++) {
+      intersects[i].object.material.transparent = true;
+      intersects[i].object.material.opacity = 0;
+    }
   }
 }
 
@@ -152,7 +164,7 @@ function paintBlock() { // when the 'c' key is down
       }
     }
   }
-  else {
+  else if (canvasLoaded) {
     const intersectsCanvas = raycaster.intersectObjects(paintCanvas.children);
     for (let i=0; i<intersectsCanvas.length; i++) { 
       if (intersectsCanvas[i].object.material.opacity !== 0) {
@@ -191,60 +203,99 @@ window.addEventListener("mousemove", onMouseMove, false);
 // window.addEventListener("click", onClick);
 
 
-//temp space for global varibles for p5.js:
-let cubeButton, sphereButton, flatButton, sceneryButton, theCanvas;
-
-
 function preload() {
+  soundFormats("mp3");
+  bgm = createAudio("assets/late-night-radio.mp3");
+
   cubeImg = loadImage("assets/cube-image.png");
+  canvasImg = loadImage("assets/easel-icon.png");
+  brushIcon = loadImage("assets/paintbrush.png");
+  chiselIcon = loadImage("assets/chisel.png");
 }
 
+
 function setup() {
-  let height = 100;
   createCanvas(windowWidth/13, windowHeight);
-  cubeButton = new Button(width*0.125, windowHeight/2, width*0.75, windowHeight*0.1);
 
-  loadPaintCanvas();
+  cubeButton = new Button(width*0.125, height*0.40, width*0.75, height*0.12, cubeImg);
+  canvasButton = new Button(width*0.125, height*0.55, width*0.75, height*0.12, canvasImg);
 
-  // // use for base canvas color instead?
-  // inputColor = createColorPicker("#ed225d");
-  // inputColor.position(width*0.95, height/2);
-
-// //when returned to the selection/title menu
-//   if () { //if previous menu was the cubeGrid
-//     scene.remove(cubeGrid);
-//   }
+  // create a button to toggle captions for control keys
+  instructions = createButton("Controls");
+  instructions.position(width*0.2, windowHeight*0.7);
+  instructions.mousePressed(displayControls);
 
 }
 
 function draw() {
-  background("grey");
-  currentScreen();
+  background("indigo");
+  bgm.loop(); // loop background music
+
+  displaySidebar();
   enableTools();
-  
 }
 
 function mouseClicked() {
-    if (cubeButton.isPressed()) {
-      cubeButton.remove();
-      loadCubeSetup();
-
+  // if side buttons are pressed:
+  if (cubeButton.isPressed() && !cubeLoaded) {
+    if (canvasLoaded) {
+      scene.remove(paintCanvas);
+      canvasLoaded = false;
     }
-}
-
-function currentScreen() {
-  if (screen === "selectionMenu") {
-    cubeButton.display();
+    loadCubeSetup();
+  }
+  if (canvasButton.isPressed() && !canvasLoaded) {
+    if (cubeLoaded) {
+      scene.remove(cubeGrid);
+      cubeLoaded = false;
+    }
+    loadPaintCanvas();
   }
 }
 
+function displayControls() {
+  showControls = !showControls;
+  if (showControls) {
+    text1 = createP("Hold ' Z ' to sculpt    **Cannot use on the flat canvas");
+    text2 = createP("Hold ' C ' to paint");
+    text3 = createP("Press ' SPACEBAR ' to completely clear/reset any changes made");
+    text4 = createP("---Click the 'Controls' again to hide menu");
+   
+    text1.style("font-size", "10pt");
+    text2.style("font-size", "10pt");
+    text3.style("font-size", "10pt");
+    text4.style("font-size", "10pt");
+  
+    text1.position(140, height-100);
+    text2.position(140, height-80);
+    text3.position(140, height-60);
+    text4.position(140, height-40);
+  }
+  else {
+    text1.remove();
+    text2.remove();
+    text3.remove();
+    text4.remove();
+  }
+
+}
+
+function displaySidebar() {
+  cubeButton.display();
+  canvasButton.display();
+
+  rect(0, height*0.865, 120, 60);
+  image(chiselIcon, width*0.09, height*0.87, 50, 50);
+  image(brushIcon, width*0.5, height*0.873, 50, 50);
+}
+
 function enableTools() {
-   //enabling sculpt function
+   // sculpt function
    if (keyIsDown(90)) {  // 'z' key
     sculptBlock();
   }
 
-  //enabling paint function
+  // paint function
   if (keyIsDown(67)) { // 'c' key
     cDown = true;
     paintBlock();
@@ -255,30 +306,28 @@ function enableTools() {
 }
 
 function keyPressed() {
-  if (keyCode === 77 && cubeLoaded === false) { // M
-    loadCubeSetup();
-  }
-  if (keyCode === 81) { // Q
-    if (cubeLoaded) {
-      resetCube();
-    }
+  if (keyCode === 32) { // SPACEBAR key
+    resetShape();
   }
 }
 
+
 class Button {
-  constructor(x, y, w, h) {
+  constructor(x, y, w, h, image) {
     this.x = x;
-    this.y = y + h/2;
+    this.y = y;
     this.width = w;
     this.height = h;
+    this.image = image;
   }
 
   display() {
     if (screen = "selectionMenu") {
-      noStroke();
+      stroke(100);
+      strokeWeight(2);
       fill("white");
       rect(this.x, this.y, this.width, this.height);
-      image(cubeImg, this.x, this.y, this.width, this.width);
+      image(this.image, this.x, this.y-3, this.width, this.width);
     }
   }
 
@@ -292,3 +341,11 @@ class Button {
     return (mouseX > this.x && mouseX < this.x + this.width) && (mouseY > this.y && mouseY < this.y + this.height);
   }
 }
+
+//put this in a credits section later...
+
+//BGM Music Used:
+
+/* "Late Night Radio" Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 4.0 License
+http://creativecommons.org/licenses/by/4.0/ */
