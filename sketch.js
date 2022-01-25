@@ -8,10 +8,12 @@
 let cubeGrid, paintCanvas, mouse, raycaster, controls, inputColor;
 let cubeImg, canvasImg, brushIcon, chiselIcon, bgm;
 let cubeButton, canvasButton, instructions, text1, text2, text3, text4, text5, text6, text7;
+let paintColorText, bgColorText;
 
 let gridSize = 15;
 let spacing = 1;
 let theColor = 0xed225d;
+let someColor = 0xd3d3d3;
 
 let cDown = false;
 let cubeLoaded = false;
@@ -36,7 +38,7 @@ controls = new THREE.OrbitControls(camera, renderer.domElement); // mouse-drag c
 // base scene setup
 camera.position.set(7, 6.5, 8);
 camera.lookAt(0,0,0);
-scene.background = new THREE.Color("lightgrey");
+scene.background = new THREE.Color(someColor);
 
 const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
 scene.add(directionalLight);
@@ -192,15 +194,20 @@ function setup() {
   instructions.position(width*0.2, windowHeight*0.7);
   instructions.mousePressed(displayControls);
 
-  // add a colour selection wheel for paintbrush
+  // add colour selection wheels for paintbrush and background
   inputColor = createColorPicker("#ed225d");
-  inputColor.position(width*0.175, height*0.25);
+  inputColor.position(width*0.175, height*0.23);
   inputColor.size(75, 75);
+
+  bgColor = createColorPicker("#d3d3d3");
+  bgColor.position(width*0.175, height*0.17);
+  bgColor.size(75, 30);
 }
 
 function draw() {
   background("indigo");
   displaySidebar();
+  displayText();
   enableTools();
 }
 
@@ -227,9 +234,23 @@ function mouseClicked() {
   }
 }
 
+function displayText() {
+  paintColorText = createP("Brush colour");
+  paintColorText.style("color", "lightgrey");
+  paintColorText.style("font-size", "10pt");
+  paintColorText.position(width*0.2, height*0.315);
+
+  bgColorText = createP("BG colour");
+  bgColorText.style("color", "lightgrey");
+  bgColorText.style("font-size", "10pt");
+  bgColorText.position(width*0.25, height*0.13);
+
+
+}
+
 function displayControls() {
   showControls = !showControls;
-  if (showControls) { // display text
+  if (showControls) { // display text for controls guide
     text1 = createP("Hold ' Z ' to sculpt    **Cannot use on the flat canvas");
     text2 = createP("Hold ' C ' to paint");
     text3 = createP("Press ' SPACEBAR ' to completely clear/reset any changes made");
@@ -305,9 +326,12 @@ function enableTools() {
     cDown = false;
   }
 
-  // update current brush color to the inputted color
+  // update current colors to the most recent user-inputted colors
   if (inputColor.value() !== theColor) {
     theColor = new THREE.Color(inputColor.value());
+  }
+  if (bgColor.value() !== someColor) {
+    someColor = new THREE.Color(bgColor.value());
   }
 }
 
