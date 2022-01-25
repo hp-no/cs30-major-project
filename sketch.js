@@ -5,7 +5,7 @@
 // - describe what you did to take this project "above and beyond"
 
 // Variables
-let cubeGrid, paintCanvas, mouse, raycaster, controls, inputColor;
+let cubeGrid, paintCanvas, mouse, raycaster, controls, inputColor, bgColor;
 let cubeImg, canvasImg, brushIcon, chiselIcon, bgm;
 let cubeButton, canvasButton, instructions, text1, text2, text3, text4, text5, text6, text7;
 let paintColorText, bgColorText;
@@ -357,12 +357,6 @@ class Button {
     fill("white");
     rect(this.x, this.y, this.width, this.height);
     image(this.image, this.x, this.y-3, this.width, this.width);
-  }
-
-  remove() {
-    erase();
-    rect(this.x-1, this.y-1, this.width+2, this.height+2);
-    noErase();
   }
 
   isPressed() {

@@ -2,7 +2,7 @@
 
 ## Description
 
-A sculpting (clay sculptures) simulator made on a 3D grid.
+A drawing/sculpting simulator made on a 3D plane.
 
 ## Must Have List
 
