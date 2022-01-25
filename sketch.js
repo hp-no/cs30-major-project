@@ -5,20 +5,19 @@
 // - describe what you did to take this project "above and beyond"
 
 // Variables
-let cubeGrid, paintCanvas, mouse, raycaster, controls, inputColor, theColor;
+let cubeGrid, paintCanvas, mouse, raycaster, controls, inputColor;
 let cubeImg, canvasImg, brushIcon, chiselIcon, bgm;
 let cubeButton, canvasButton, instructions, text1, text2, text3, text4, text5, text6, text7;
 
 let gridSize = 15;
 let spacing = 1;
+let theColor = 0xed225d;
 
 let cDown = false;
 let cubeLoaded = false;
 let canvasLoaded = false;
 let showControls = false;
 
-let screen = "selectionMenu";
-theColor = 0xed225d;
 
 // three.js setup initialization
 const scene = new THREE.Scene();
@@ -149,7 +148,6 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-
 function onMouseMove(event) {
   // calculate mouse position in normalized device coordinates, (-1 to +1) for both components
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -169,16 +167,19 @@ window.addEventListener("mousemove", onMouseMove, false);
 // window.addEventListener("click", onClick);
 
 
+
+
+
+
 function preload() {
   soundFormats("mp3");
-  bgm = createAudio("assets/late-night-radio.mp3");
+  bgm = loadSound("assets/late-night-radio.mp3");
 
   cubeImg = loadImage("assets/cube-image.png");
   canvasImg = loadImage("assets/easel-icon.png");
   brushIcon = loadImage("assets/paintbrush.png");
   chiselIcon = loadImage("assets/chisel.png");
 }
-
 
 function setup() {
   createCanvas(windowWidth/13, windowHeight);
@@ -191,24 +192,24 @@ function setup() {
   instructions.position(width*0.2, windowHeight*0.7);
   instructions.mousePressed(displayControls);
 
+  // add a colour selection wheel for paintbrush
   inputColor = createColorPicker("#ed225d");
   inputColor.position(width*0.175, height*0.25);
   inputColor.size(75, 75);
-
 }
 
 function draw() {
   background("indigo");
-  bgm.loop(); // loop background music
-
   displaySidebar();
   enableTools();
-  if (inputColor.value() !== theColor) {
-    theColor = new THREE.Color(inputColor.value());
-  }
 }
 
 function mouseClicked() {
+  // play background music
+  if (!bgm.isPlaying()) {
+    bgm.loop();
+  }
+
   // if side buttons are pressed:
   if (cubeButton.isPressed() && !cubeLoaded) {
     if (canvasLoaded) {
@@ -302,6 +303,11 @@ function enableTools() {
   }
   else {
     cDown = false;
+  }
+
+  // update current brush color to the inputted color
+  if (inputColor.value() !== theColor) {
+    theColor = new THREE.Color(inputColor.value());
   }
 }
 
