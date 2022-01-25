@@ -1,4 +1,4 @@
-// CS30 Major Project: (temporary title)
+// CS30 Major Project: (Draw/Art 3D)
 // Hannah Dechavez
 // January 25, 2022
 // Extra for Experts:
@@ -7,7 +7,7 @@
 // Variables
 let cubeGrid, paintCanvas, mouse, raycaster, controls, inputColor, theColor;
 let cubeImg, canvasImg, brushIcon, chiselIcon, bgm;
-let cubeButton, canvasButton, instructions, text1, text2, text3, text4;
+let cubeButton, canvasButton, instructions, text1, text2, text3, text4, text5, text6, text7;
 
 let gridSize = 15;
 let spacing = 1;
@@ -18,6 +18,7 @@ let canvasLoaded = false;
 let showControls = false;
 
 let screen = "selectionMenu";
+theColor = 0xed225d;
 
 // three.js setup initialization
 const scene = new THREE.Scene();
@@ -42,11 +43,10 @@ const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
 scene.add(directionalLight);
 
 // display small center cube
-if (!canvasLoaded) {
-  let edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
-  let centerCube = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
-  scene.add(centerCube);
-}
+let edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
+let centerCube = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
+scene.add(centerCube);
+
 
 function loadCubeSetup () {
   // scene setup for the cube
@@ -66,6 +66,7 @@ function loadCubeSetup () {
     }
   }
   scene.add(cubeGrid);
+  scene.add(centerCube);
   cubeLoaded = true;
 }
 
@@ -86,6 +87,7 @@ function loadPaintCanvas() {
     }
   }
   scene.add(paintCanvas);
+  scene.remove(centerCube);
   canvasLoaded = true;
 }
 
@@ -127,7 +129,7 @@ function paintBlock() { // when the 'c' key is down
     const intersectsCube = raycaster.intersectObjects(cubeGrid.children);
     for (let i=0; i<intersectsCube.length; i++) { 
       if (intersectsCube[i].object.material.opacity !== 0) {
-        intersectsCube[i].object.material.color.set(0xdfff00);
+        intersectsCube[i].object.material.color.set(theColor); // 0xdfff00
       }
     }
   }
@@ -135,7 +137,7 @@ function paintBlock() { // when the 'c' key is down
     const intersectsCanvas = raycaster.intersectObjects(paintCanvas.children);
     for (let i=0; i<intersectsCanvas.length; i++) { 
       if (intersectsCanvas[i].object.material.opacity !== 0) {
-        intersectsCanvas[i].object.material.color.set(0xdfff00);
+        intersectsCanvas[i].object.material.color.set(theColor);
       }
     }
   }
@@ -189,6 +191,10 @@ function setup() {
   instructions.position(width*0.2, windowHeight*0.7);
   instructions.mousePressed(displayControls);
 
+  inputColor = createColorPicker("#ed225d");
+  inputColor.position(width*0.175, height*0.25);
+  inputColor.size(75, 75);
+
 }
 
 function draw() {
@@ -197,6 +203,9 @@ function draw() {
 
   displaySidebar();
   enableTools();
+  if (inputColor.value() !== theColor) {
+    theColor = new THREE.Color(inputColor.value());
+  }
 }
 
 function mouseClicked() {
@@ -223,23 +232,36 @@ function displayControls() {
     text1 = createP("Hold ' Z ' to sculpt    **Cannot use on the flat canvas");
     text2 = createP("Hold ' C ' to paint");
     text3 = createP("Press ' SPACEBAR ' to completely clear/reset any changes made");
-    text4 = createP("---Click the 'Controls' again to hide menu");
+    text4 = createP("---Click 'Controls' again to hide this menu");
+    
+    text5 = createP("Mouse LEFT-CLICK and DRAG to rotate camera");
+    text6 = createP("Mouse RIGHT-CLICk and DRAG to move camera position");
+    text7 = createP("Use mouse scroll-wheel to zoom-in/out");
    
     text1.style("font-size", "10pt");
     text2.style("font-size", "10pt");
     text3.style("font-size", "10pt");
-    text4.style("font-size", "10pt");
+    text4.style("font-size", "11pt");
+    text5.style("font-size", "10pt");
+    text6.style("font-size", "10pt");
+    text7.style("font-size", "10pt");
   
-    text1.position(140, height-100);
-    text2.position(140, height-80);
-    text3.position(140, height-60);
+    text1.position(140, height-110);
+    text2.position(140, height-90);
+    text3.position(140, height-70);
     text4.position(140, height-40);
+    text5.position(550, height-110);
+    text6.position(550, height-90);
+    text7.position(550, height-70);
   }
   else { // hide text
     text1.remove();
     text2.remove();
     text3.remove();
     text4.remove();
+    text5.remove();
+    text6.remove();
+    text7.remove();
   }
 
 }
@@ -248,21 +270,35 @@ function displaySidebar() {
   cubeButton.display();
   canvasButton.display();
 
-  rect(0, height*0.865, 120, 60);
-  image(chiselIcon, width*0.09, height*0.87, 50, 50);
-  image(brushIcon, width*0.5, height*0.873, 50, 50);
+  rect(0, height*0.855, 120, 60);
+  image(chiselIcon, width*0.09, height*0.86, 50, 50);
+  image(brushIcon, width*0.5, height*0.863, 50, 50);
+  fill("lightgrey");
+  circle(width*0.25, height*0.965, 25); // indicator if sculpting is being done
+  circle(width*0.75, height*0.965, 25); // indicator if paint function is being used
 }
 
 function enableTools() {
   // sculpt function
   if (keyIsDown(90)) {  // 'z' key
     sculptBlock();
+
+    if (cubeLoaded) { //indicate that sculpting function is ON
+      fill("lime");
+      circle(width*0.25, height*0.965, 25);
+    }
   }
+
 
   // paint function
   if (keyIsDown(67)) { // 'c' key
     cDown = true;
     paintBlock();
+
+    if (cubeLoaded || canvasLoaded) { //indicate that paint function is ON
+      fill("lime");
+      circle(width*0.75, height*0.965, 25); 
+    }
   }
   else {
     cDown = false;
