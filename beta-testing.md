@@ -1,5 +1,7 @@
-## Beta testing
+# Beta testing
 Constructive feedback + suggestions gathered from beta-testers.
+
+# Feedback
 
 ## Gerlie
 - Add an option to change the background colour
@@ -13,3 +15,10 @@ Constructive feedback + suggestions gathered from beta-testers.
 
 ## Paulie
 - Potentially add an undo function
+
+# What got added/changed:
+- Implemented another colour wheel to change BG colour
+- Added a "Preview" mode for the cube when the enter key is pressed
+- Fixed the painting function to not paint through the blocks behind the intended block
+- Fixed the sculpting tool to not sculpt through multiple layers simultaneously
+- Removed circle indicators underneath tool icons
