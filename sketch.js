@@ -132,6 +132,7 @@ function sculptBlock() {
       intersects[i].object.material.transparent = true;
 
       //store the removed objects in a variable
+      intersects[0].object.material.color.set(0xffffff);
       removedObjects.add(intersects[0].object);
       cubeGrid.remove(intersects[0].object);
     }
