@@ -40,7 +40,6 @@ removedObjects = new THREE.Object3D();
 // basic scene setup
 camera.position.set(7, 6.5, 8);
 camera.lookAt(0,0,0);
-camera.layers.enableAll();
 const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
 scene.add(directionalLight);
 
@@ -221,6 +220,7 @@ function draw() {
 function mouseClicked() {
   // play background music
   if (!bgm.isPlaying()) {
+    scene.remove(centerCube);
     bgm.loop();
   }
 
