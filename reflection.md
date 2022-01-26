@@ -1,7 +1,7 @@
 # Reflection
 
 ## Advice to self if I did this project again:
-I would probably cut the time in learning three.js in half so I could put more time into coding, or just avoid making the project in 3D altogether. Working with 3D has been kind of a nightmare, and I think I could've gone farther and made more progress quicker if I had stuck to the 2D plane.
+I would probably shorten the time I spent looking into different methods for a 3D program, and put more of that time into learning the three.js docs to have gotten a better feel for the functions and code. If I did this project again, I might just avoid using 3D elements or least not have the project be based so heavily on the 3D plane. Working and getting used to the nuances of working in 3D has been kind of a nightmare, and I think I could've done more or made faster progress had I made the program just a bit less reliant on the 3D aspect.
 
 ## Most difficult part of the project:
 
